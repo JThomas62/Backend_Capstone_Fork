@@ -20,8 +20,7 @@ async function createUser({ name, email, username, password, status }) {
       `
       INSERT INTO users(name, email, username, password, status)
       VALUES($1, $2, $3, $4, $5)
-      ON CONFLICT (email) DO NOTHING
-      ON CONFLICT (username) DO NOTHING
+      ON CONFLICT (email, username) DO NOTHING
       RETURNING *;
       `,
       [name, email, username, password, status]

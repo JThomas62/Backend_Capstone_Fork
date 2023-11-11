@@ -2,9 +2,10 @@ const {
     client,
     createUser,
     createGenre,
+    createBook,
     getAllUsers,
     getAllGenres,
-    createBook,
+    getAllBooks,
 
 } = require("./index");
 

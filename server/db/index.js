@@ -1,16 +1,3 @@
-//PLACEHOLDER CODE
-
-//Pool allows us to connect to Postgres database. Therefore, we will then export this to other files as needed to allow for queries using  await db.query(...SQL Code HERE...)
-
-const { Pool } = require("pg");
-// import { Pool } from "pg";
-
-// Pool allows interaction with Postgres Library; Info is no longer necessary to add here since it is in .env file
-const pool = new Pool();
-
-// export const query = (text, params) => pool.query(text, params);
-
-
 const { Client } = require("pg"); // Import pg module
 require("dotenv").config();
 
@@ -24,7 +11,29 @@ const client = new Client({
       : undefined,
 });
 
+// USER Methods
+async function createUser({ name, email, username, password, status }) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      INSERT INTO users(name, email, username, password, status)
+      VALUES($1, $2, $3, $4, $5)
+      ON CONFLICT (email) DO NOTHING
+      ON CONFLICT (username) DO NOTHING
+      RETURNING *;
+      `,
+      [name, email, username, password, status]
+    );
+    return user;
+  } catch (error) {
+    console.log("createUser() throws error")
+    throw error;
+  }
+}
 
 module.exports = {
   client,
+  createUser,
 };

@@ -74,7 +74,7 @@ async function getAllGenres() {
     throw error;
   }
 }
-
+// BOOK Method
 async function createBook({ 
   title, 
   author, 
@@ -112,6 +112,42 @@ async function getAllBooks() {
   }
 }
 
+// COMMENT methods
+async function createComment({ 
+  user_id, 
+  book_id, 
+  comment, 
+  rating, 
+}) {
+  try {
+    const {
+      rows: [comment],
+    } = await client.query(`
+      INSERT INTO comments(user_id, book_id, comment, rating)
+      VALUES($1, $2, $3, $4)
+      RETURNING *;
+    `,
+    [user_id, book_id, comment, rating]
+    );
+    return comment;
+  } catch (error) {
+    console.log("createComment() throws error");
+    throw error;
+  }
+}
+async function getAllComments() {
+  try {
+    const {rows } = await client.query(`
+      SELECT *,
+      FROM comments;
+    `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 module.exports = {
   client,
   createUser,
@@ -120,4 +156,6 @@ module.exports = {
   getAllGenres,
   createBook,
   getAllBooks,
+  createComment,
+  getAllComments,
 };

@@ -3,9 +3,11 @@ const {
     createUser,
     createGenre,
     createBook,
+    createComment,
     getAllUsers,
     getAllGenres,
     getAllBooks,
+    getAllComments,
 
 } = require("./index");
 

@@ -74,10 +74,38 @@ async function getAllGenres() {
     throw error;
   }
 }
+
+async function createBook({ 
+  title, 
+  author, 
+  rating, 
+  description, 
+  genre_id, 
+  image_url, 
+  active, 
+}) {
+  try {
+    const {
+      rows: [book],
+    } = await client.query(`
+      INSERT INTO books(title, author, rating, description, image_url, active)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *;
+    `,
+    [title, author, rating, description, image_url, active]
+    );
+    return book;
+  } catch (error) {
+    console.log("createBook() throws error");
+    throw error;
+  }
+}
+
 module.exports = {
   client,
   createUser,
   getAllUsers,
   createGenre,
   getAllGenres,
+  createBook,
 };

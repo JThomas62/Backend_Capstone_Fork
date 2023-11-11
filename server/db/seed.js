@@ -2,6 +2,9 @@ const {
     client,
     createUser,
     createGenre,
+    getAllUsers,
+    getAllGenres,
+    createBook,
 
 } = require("./index");
 
@@ -83,7 +86,7 @@ async function rebuildDB() {
 
     await dropTables();
     await createTables();
-    
+
     await createInitialGenres();
     await createInitialUsers();
     await createInitialBooks();

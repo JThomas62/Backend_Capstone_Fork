@@ -64,10 +64,21 @@ async function createGenre({ name }) {
     throw error;
   } 
 }
-
+async function getAllGenres() {
+  try {
+    const {rows } = await client.query(`
+      SELECT *,
+      FROM genres;
+    `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
 module.exports = {
   client,
   createUser,
   getAllUsers,
   createGenre,
+  getAllGenres,
 };

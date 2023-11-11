@@ -5,6 +5,13 @@ const {
 
 } = require("./index");
 
+const {
+  createInitialGenres,
+  createInitialUsers,
+  createInitialBooks,
+  createInitialComments,
+} = require("./seedData")
+
 async function dropTables() {
     try {
       console.log("Starting to drop tables...");
@@ -76,7 +83,11 @@ async function rebuildDB() {
 
     await dropTables();
     await createTables();
-    // await createInitial Books/Users
+    
+    await createInitialGenres();
+    await createInitialUsers();
+    await createInitialBooks();
+    await createInitialComments();
   } catch (error) {
     console.log("Error during rebuildDB");
     throw error;

@@ -44,8 +44,30 @@ async function getAllUsers() {
   }
 }
 
+// GENRE Methods
+async function createGenre({ name }) {
+  try {
+    const {
+      rows: [genre],
+    } = await client.query(
+      `
+      INSERT INTO genre(name)
+      VALUES($1)
+      ON CONFLICT (name) DO NOTHING
+      RETURNING *;
+      `,
+      [name]
+    );
+    return genre;
+  } catch (error) {
+    console.log("createGenre() throws error")
+    throw error;
+  } 
+}
+
 module.exports = {
   client,
   createUser,
   getAllUsers,
+  createGenre,
 };

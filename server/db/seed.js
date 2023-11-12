@@ -1,14 +1,13 @@
 const {
-    client,
-    createUser,
-    createGenre,
-    createBook,
-    createComment,
-    getAllUsers,
-    getAllGenres,
-    getAllBooks,
-    getAllComments,
-
+  client,
+  createGenre,
+  getAllGenres,
+  createUser,
+  getAllUsers,
+  createBook,
+  getAllBooks,
+  createComment,
+  getAllComments,
 } = require("./index");
 
 const {
@@ -16,27 +15,26 @@ const {
   createInitialUsers,
   createInitialBooks,
   createInitialComments,
-} = require("./seedData")
+} = require("./seedData");
 
 async function dropTables() {
-    try {
-      console.log("Starting to drop tables...");
-  
-      // have to make sure to drop in correct order
-      await client.query(`
+  try {
+    console.log("Starting to drop tables...");
+
+    // have to make sure to drop in correct order--comments, books, genres, users
+    await client.query(`
         DROP TABLE IF EXISTS comments;
         DROP TABLE IF EXISTS books;
         DROP TABLE IF EXISTS genres;
         DROP TABLE IF EXISTS users;
       `);
-  
-      console.log("Finished dropping tables!");
-    } catch (error) {
-      console.error("Error dropping tables!");
-      throw error;
-    }
-  }
 
+    console.log("Finished dropping tables!");
+  } catch (error) {
+    console.error("Error dropping tables!");
+    throw error;
+  }
+}
 
 async function createTables() {
   try {
@@ -53,7 +51,8 @@ async function createTables() {
         email VARCHAR(100) UNIQUE NOT NULL,
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(50) NOT NULL,
-        status VARCHAR(20)
+        status VARCHAR(20),
+        CONSTRAINT users_name_email_unique UNIQUE (name, email )
     );
       CREATE TABLE books (
         book_id SERIAL PRIMARY KEY,
@@ -70,7 +69,7 @@ async function createTables() {
           comment_id SERIAL PRIMARY KEY,
           user_id INT NOT NULL,
           book_id INT NOT NULL,
-          comment TEXT NOT NULL,
+          content TEXT NOT NULL,
           rating DECIMAL(3,2),
           CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
           CONSTRAINT fk_book_id FOREIGN KEY (book_id) REFERENCES books(book_id)
@@ -99,3 +98,48 @@ async function rebuildDB() {
     throw error;
   }
 }
+
+async function rebuildDB() {
+  try {
+    client.connect();
+    // have to make sure to rebuild in correct order--tables, genres, users, books, comments
+    await dropTables();
+    await createTables();
+    await createInitialGenres();
+    await createInitialUsers();
+    await createInitialBooks();
+    await createInitialComments();
+  } catch (error) {
+    console.log("Error during rebuildDB");
+    throw error;
+  }
+}
+async function testDB() {
+  try {
+    console.log("Starting to test database...");
+
+    console.log("Calling getAllGenres");
+    const genres = await getAllGenres();
+    console.log("Result:", genres);
+
+    console.log("Calling getAllUsers");
+    const users = await getAllUsers();
+    console.log("Result:", users);
+
+    console.log("Calling getAllBooks");
+    const books = await getAllBooks();
+    console.log("Result:", books);
+
+    console.log("Calling getAllComments");
+    const comments = await getAllComments();
+    console.log("Result:", comments);
+
+    console.log("Finished database tests!");
+  } catch (err) {
+    console.error(err);
+  }
+}
+rebuildDB()
+  .then(testDB)
+  .catch(console.error)
+  .finally(() => client.end());

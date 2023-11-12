@@ -2,9 +2,8 @@ const { Client } = require("pg"); // Import pg module
 require("dotenv").config();
 
 const client = new Client({
-  connectionString: 
-    process.env.DATABASE_URL || 
-    "https://localhost:5432/bookclub",
+  connectionString:
+    process.env.DATABASE_URL || "https://localhost:5432/bookclub",
   ssl:
     process.env.NODE_ENV === "production"
       ? { rejectUnauthorized: false }
@@ -20,14 +19,14 @@ async function createUser({ name, email, username, password, status }) {
       `
       INSERT INTO users(name, email, username, password, status)
       VALUES($1, $2, $3, $4, $5)
-      ON CONFLICT (email, username) DO NOTHING
+      ON CONFLICT ON CONSTRAINT users_name_email_unique DO NOTHING
       RETURNING *;
       `,
       [name, email, username, password, status]
     );
     return user;
   } catch (error) {
-    console.log("createUser() throws error")
+    console.log("createUser() throws error");
     throw error;
   }
 }
@@ -50,7 +49,7 @@ async function createGenre({ name }) {
       rows: [genre],
     } = await client.query(
       `
-      INSERT INTO genre(name)
+      INSERT INTO genres(name)
       VALUES($1)
       ON CONFLICT (name) DO NOTHING
       RETURNING *;
@@ -59,14 +58,14 @@ async function createGenre({ name }) {
     );
     return genre;
   } catch (error) {
-    console.log("createGenre() throws error")
+    console.log("createGenre() throws error");
     throw error;
-  } 
+  }
 }
 async function getAllGenres() {
   try {
-    const {rows } = await client.query(`
-      SELECT *,
+    const { rows } = await client.query(`
+      SELECT *
       FROM genres;
     `);
     return rows;
@@ -74,25 +73,58 @@ async function getAllGenres() {
     throw error;
   }
 }
+
+async function getGenreById(id) {
+  try {
+    const {
+      rows: [genre],
+    } = await client.query(`SELECT * FROM genres WHERE genre_id = $1`, [id]);
+
+    if (!genre) {
+      throw {
+        name: "Genre(ID)NotFoundError",
+        message: `Genre with genre_id: ${id} does not exist`,
+      };
+    }
+    return genre;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateGenre(id, name) {
+  try {
+    const {
+      rows: [genre],
+    } = await client.query(
+      `UPDATE genres SET name = $2 WHERE genre_id=$1 RETURNING *;`,
+      [id, name]
+    );
+    return genre;
+  } catch (error) {
+    throw error;
+  }
+}
 // BOOK Method
-async function createBook({ 
-  title, 
-  author, 
-  rating, 
-  description, 
-  genre_id, 
-  image_url, 
-  active, 
+async function createBook({
+  title,
+  author,
+  rating,
+  description,
+  genre_id,
+  image_url,
+  active,
 }) {
   try {
     const {
       rows: [book],
-    } = await client.query(`
-      INSERT INTO books(title, author, rating, description, image_url, active)
+    } = await client.query(
+      `
+      INSERT INTO books(title, author, rating, description, genre_id, image_url, active)
       VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING *;
     `,
-    [title, author, rating, description, image_url, active]
+      [title, author, rating, description, genre_id, image_url, active]
     );
     return book;
   } catch (error) {
@@ -102,8 +134,8 @@ async function createBook({
 }
 async function getAllBooks() {
   try {
-    const {rows } = await client.query(`
-      SELECT *,
+    const { rows } = await client.query(`
+      SELECT *
       FROM books;
     `);
     return rows;
@@ -112,22 +144,36 @@ async function getAllBooks() {
   }
 }
 
+async function deleteBookById(id) {
+  try {
+    const {
+      rows: [book],
+    } = await client.query(
+      `
+    DELETE FROM books
+    WHERE book_id = $1
+    RETURNING *;
+  `,
+      [id]
+    );
+    return book;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // COMMENT methods
-async function createComment({ 
-  user_id, 
-  book_id, 
-  comment, 
-  rating, 
-}) {
+async function createComment({ user_id, book_id, content, rating }) {
   try {
     const {
       rows: [comment],
-    } = await client.query(`
-      INSERT INTO comments(user_id, book_id, comment, rating)
+    } = await client.query(
+      `
+      INSERT INTO comments(user_id, book_id, content, rating)
       VALUES($1, $2, $3, $4)
       RETURNING *;
     `,
-    [user_id, book_id, comment, rating]
+      [user_id, book_id, content, rating]
     );
     return comment;
   } catch (error) {
@@ -137,8 +183,8 @@ async function createComment({
 }
 async function getAllComments() {
   try {
-    const {rows } = await client.query(`
-      SELECT *,
+    const { rows } = await client.query(`
+      SELECT *
       FROM comments;
     `);
     return rows;
@@ -147,15 +193,17 @@ async function getAllComments() {
   }
 }
 
-
 module.exports = {
   client,
-  createUser,
-  getAllUsers,
   createGenre,
   getAllGenres,
+  getGenreById,
+  updateGenre,
+  createUser,
+  getAllUsers,
   createBook,
   getAllBooks,
+  deleteBookById,
   createComment,
   getAllComments,
 };

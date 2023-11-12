@@ -31,7 +31,30 @@ async function createInitialGenres() {
     await createGenre({
       name: "poetry",
     });
-
+    await createGenre({
+      name: "classics",
+    });
+    await createGenre({
+      name: "ebooks",
+    });
+    await createGenre({
+      name: "historical fiction",
+    });
+    await createGenre({
+      name: "young adult",
+    });
+    await createGenre({
+      name: "fantasy",
+    });
+    await createGenre({
+      name: "mystery",
+    });
+    await createGenre({
+      name: "nonfiction",
+    });
+    await createGenre({
+      name: "chidren's",
+    });
     console.log("Finished creating genres!");
   } catch (error) {
     console.error("Error creating genres!");

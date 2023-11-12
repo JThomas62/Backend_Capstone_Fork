@@ -105,6 +105,24 @@ async function updateGenre(id, name) {
     throw error;
   }
 }
+
+async function deleteGenreById(id) {
+  try {
+    const {
+      rows: [genre],
+    } = await client.query(
+      `
+  DELETE FROM genres
+  WHERE genre_id = $1
+  RETURNING *;
+  `,
+      [id]
+    );
+    return genre;
+  } catch (error) {
+    throw error;
+  }
+}
 // BOOK Method
 async function createBook({
   title,
@@ -199,6 +217,7 @@ module.exports = {
   getAllGenres,
   getGenreById,
   updateGenre,
+  deleteGenreById,
   createUser,
   getAllUsers,
   createBook,

@@ -39,7 +39,7 @@ booksRouter.post("/", async (req, res, next) => {
     } else {
       next({
         name: "BookCreationError",
-        message: "There was an error creating your book. Please try again.",
+        message: "There was an error creating your book. Try again.",
       });
     }
   } catch ({ name, message }) {

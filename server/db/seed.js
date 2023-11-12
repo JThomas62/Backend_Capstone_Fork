@@ -52,7 +52,7 @@ async function createTables() {
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(50) NOT NULL,
         status VARCHAR(20),
-        CONSTRAINT users_name_email_unique UNIQUE (name, email )
+        CONSTRAINT users_username_email_unique UNIQUE (username, email )
     );
       CREATE TABLE books (
         book_id SERIAL PRIMARY KEY,

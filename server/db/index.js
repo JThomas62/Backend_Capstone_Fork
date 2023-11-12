@@ -36,7 +36,7 @@ async function getAllUsers() {
       SELECT *
       FROM users;
     `);
-    return { rows };
+    return rows;
   } catch (error) {
     throw error;
   }

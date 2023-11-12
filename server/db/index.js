@@ -162,6 +162,47 @@ async function getAllBooks() {
   }
 }
 
+async function getBookById(id) {
+  try {
+    const {
+      rows: [book],
+    } = await client.query(`SELECT * FROM books WHERE book_id = $1`, [id]);
+
+    if (!book) {
+      throw {
+        name: "Book(ID)NotFoundError",
+        message: `Book with id: ${book_id} does not exist`,
+      };
+    }
+    return book;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateBook(
+  book_id,
+  title,
+  author,
+  rating,
+  description,
+  genre_id,
+  image_url,
+  active
+) {
+  try {
+    const {
+      rows: [book],
+    } = await client.query(
+      `UPDATE books SET title = $2, author = $3, rating = $4, description = $5, genre_id = $6, image_url = $7, active = $8 WHERE book_id=$1 RETURNING *;`,
+      [book_id, title, author, rating, description, genre_id, image_url, active]
+    );
+    return book;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function deleteBookById(id) {
   try {
     const {
@@ -222,6 +263,8 @@ module.exports = {
   getAllUsers,
   createBook,
   getAllBooks,
+  getBookById,
+  updateBook,
   deleteBookById,
   createComment,
   getAllComments,

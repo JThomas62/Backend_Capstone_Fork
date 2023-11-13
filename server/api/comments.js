@@ -6,6 +6,7 @@ const {
   getAllComments,
   getCommentById,
   updateComment,
+  deleteCommentById,
 } = require("../db");
 
 commentsRouter.post("/", async (req, res, next) => {
@@ -75,6 +76,24 @@ commentsRouter.patch("/:id", async (req, res, next) => {
     res.send(updatedComment);
   } catch ({ name, message }) {
     console.error({ name, message });
+    next({ name, message });
+  }
+});
+
+commentsRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const comment = await deleteCommentById(id);
+
+    if (!comment) {
+      next({
+        name: "NotFound",
+        message: `Cannot find comment with ID ${id} to delete.`,
+      });
+    } else {
+      res.send({ success: true, comment });
+    }
+  } catch ({ name, message }) {
     next({ name, message });
   }
 });

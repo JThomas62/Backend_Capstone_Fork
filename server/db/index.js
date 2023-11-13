@@ -336,6 +336,24 @@ async function updateComment(id, user_id, book_id, content, rating) {
   }
 }
 
+async function deleteCommentById(id) {
+  try {
+    const {
+      rows: [comment],
+    } = await client.query(
+      `
+  DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *;
+  `,
+      [id]
+    );
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   client,
   createGenre,
@@ -357,4 +375,5 @@ module.exports = {
   getAllComments,
   getCommentById,
   updateComment,
+  deleteCommentById,
 };

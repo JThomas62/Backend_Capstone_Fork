@@ -109,10 +109,4 @@ usersRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
-/*
-getUserById(id) done
-createUser(body) done
-updateUser(id, body)?
-deleteUserBy(id)?
-*/
 module.exports = usersRouter;

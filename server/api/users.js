@@ -70,6 +70,45 @@ usersRouter.get("/:id", async (req, res, next) => {
   }
 });
 
+usersRouter.patch("/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const { name, email, username, password, status } = req.body;
+
+  try {
+    const updatedUser = await updateUser(
+      id,
+      name,
+      email,
+      username,
+      password,
+      status
+    );
+
+    res.send({ user: updatedUser });
+  } catch ({ name, message }) {
+    console.error({ name, message });
+    next({ name, message });
+  }
+});
+
+usersRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await deleteUserById(id);
+
+    if (!user) {
+      next({
+        name: "NotFound",
+        message: `Cannot find user with ID ${user_id} to delete.`,
+      });
+    } else {
+      res.send({ success: true, user });
+    }
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
 /*
 getUserById(id) done
 createUser(body) done

@@ -19,7 +19,7 @@ async function createUser({ name, email, username, password, status }) {
       `
       INSERT INTO users(name, email, username, password, status)
       VALUES($1, $2, $3, $4, $5)
-      ON CONFLICT ON CONSTRAINT users_name_email_unique DO NOTHING
+      ON CONFLICT ON CONSTRAINT users_username_email_unique DO NOTHING
       RETURNING *;
       `,
       [name, email, username, password, status]
@@ -37,6 +37,56 @@ async function getAllUsers() {
       FROM users;
     `);
     return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUserById(id) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(`SELECT * FROM users WHERE user_id = $1`, [id]);
+
+    if (!user) {
+      throw {
+        name: "User(ID)NotFoundError",
+        message: `User with user_id: ${id} does not exist`,
+      };
+    }
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateUser(id, name, email, username, password, status) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `UPDATE users SET name = $2, email = $3, username = $4, password = $5, status = $6 WHERE user_id=$1 RETURNING *;`,
+      [id, name, email, username, password, status]
+    );
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteUserById(id) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+  DELETE FROM users
+  WHERE user_id = $1
+  RETURNING *;
+  `,
+      [id]
+    );
+    return user;
   } catch (error) {
     throw error;
   }
@@ -252,6 +302,40 @@ async function getAllComments() {
   }
 }
 
+async function getCommentById(id) {
+  try {
+    const {
+      rows: [comment],
+    } = await client.query(`SELECT * FROM comments WHERE comment_id = $1`, [
+      id,
+    ]);
+
+    if (!comment) {
+      throw {
+        name: "Comment(ID)NotFoundError",
+        message: `Comment with comment_id: ${id} does not exist`,
+      };
+    }
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateComment(id, user_id, book_id, content, rating) {
+  try {
+    const {
+      rows: [comment],
+    } = await client.query(
+      `UPDATE comments SET user_id = $2, book_id = $3, content = $4, rating = $5 WHERE comment_id=$1 RETURNING *;`,
+      [id, user_id, book_id, content, rating]
+    );
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   client,
   createGenre,
@@ -261,6 +345,9 @@ module.exports = {
   deleteGenreById,
   createUser,
   getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUserById,
   createBook,
   getAllBooks,
   getBookById,
@@ -268,4 +355,6 @@ module.exports = {
   deleteBookById,
   createComment,
   getAllComments,
+  getCommentById,
+  updateComment,
 };

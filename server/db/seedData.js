@@ -254,16 +254,12 @@ module.exports = {
   createInitialBooks,
   createInitialComments,
 };
-(381 kB)
-https://upload.wikimedia.org/wikipedia/commons/6/61/Huckleberry_Finn_book.JPG
+//upload.wikimedia.org/wikipedia/commons/6/61/Huckleberry_Finn_book.JPG
 
-(124 kB)
-https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1681807772i/123204599.jpg
+//images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1681807772i/123204599.jpg
 
-(447 kB)
-https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1676055441i/66098770.jpg
+//images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1676055441i/66098770.jpg
 
-(181 kB)
-https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1688416912i/75668276.jpg
+//images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1688416912i/75668276.jpg
 
-(51 kB)
+//images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1680964558i/126804216.jpg

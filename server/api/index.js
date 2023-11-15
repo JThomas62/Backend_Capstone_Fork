@@ -7,7 +7,12 @@ const cors = require("cors");
 
 const apiRouter = express.Router();
 
-apiRouter.use(cors());
+apiRouter.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+  })
+);
 
 // Allows access to the body of the request req.body
 apiRouter.use(express.json());

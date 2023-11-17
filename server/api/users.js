@@ -1,17 +1,5 @@
-// Generate a secret key using crypto and print it. Use this value to set an environment variable.
-const crypto = require('crypto');
-const generatedSecretKey = crypto.randomBytes(32).toString('hex');
-console.log(generatedSecretKey);
-
-// Express app and other dependencies
 const express = require("express");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const usersRouter = express.Router();
-
-// Configuration values
-const saltRounds = 10;
-const secretKey = process.env.SECRET_KEY; // Use the key from environment variables
 
 const {
   getAllUsers,
@@ -21,137 +9,106 @@ const {
   deleteUserById,
 } = require("../db");
 
-// Function to generate token
-function generateToken(user) {
-  return jwt.sign({ userId: user.id }, secretKey, { expiresIn: '24h' });
-}
-
-// Middleware for token authentication
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
+/*
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(50) NOT NULL,
+        status VARCHAR(20),
+*/
 usersRouter.post("/", async (req, res, next) => {
   const { name, email, username, password, status } = req.body;
 
+  const userData = {};
+
   try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const userData = {
-      name,
-      email,
-      username,
-      password: hashedPassword,
-      status
-    };
+    userData.name = name;
+    userData.email = email;
+    userData.username = username;
+    userData.password = password;
+    userData.status = status;
+
+    console.log(`Trying to createUser ${userData}`);
 
     const user = await createUser(userData);
 
     if (user) {
-      const token = generateToken(user);
-      res.send({ user, token });
+      res.send(user);
     } else {
       next({
         name: "userCreationError",
-        message: "Error in creating user. Please try again.",
+        message:
+          "There was an error creating your user. Please try again. Possibly user's name or email are not unique or pre-existing",
       });
     }
-  } catch (error) {
-    next(error);
+  } catch ({ name, message }) {
+    next({ name, message });
   }
 });
 
-// ... Other routes (GET, PATCH, DELETE) remain the same ...
-// Generate a secret key using crypto and print it. Use this value to set an environment variable.
-const crypto = require('crypto');
-const generatedSecretKey = crypto.randomBytes(32).toString('hex');
-console.log(generatedSecretKey);
+usersRouter.get("/", async (req, res, next) => {
+  try {
+    const allUsers = await getAllUsers();
 
-// Express app and other dependencies
-const express = require("express");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const usersRouter = express.Router();
+    res.send({
+      allUsers,
+    });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
 
-// Configuration values
-const saltRounds = 10;
-const secretKey = process.env.SECRET_KEY; // Use the key from environment variables
+usersRouter.get("/:id", async (req, res, next) => {
+  const { id } = req.params;
 
-const {
-  getAllUsers,
-  createUser,
-  getUserById,
-  updateUser,
-  deleteUserById,
-} = require("../db");
+  try {
+    const user = await getUserById(id);
 
-// Function to generate token
-function generateToken(user) {
-  return jwt.sign({ userId: user.id }, secretKey, { expiresIn: '24h' });
-}
+    res.send({ user });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
 
-// Middleware for token authentication
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
-usersRouter.post("/", async (req, res, next) => {
+usersRouter.patch("/:id", async (req, res, next) => {
+  const { id } = req.params;
   const { name, email, username, password, status } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const userData = {
+    const updatedUser = await updateUser(
+      id,
       name,
       email,
       username,
-      password: hashedPassword,
+      password,
       status
-    };
+    );
 
-    const user = await createUser(userData);
-
-    if (user) {
-      const token = generateToken(user);
-      res.send({ user, token });
-    } else {
-      next({
-        name: "userCreationError",
-        message: "Error in creating user. Please try again.",
-      });
-    }
-  } catch (error) {
-    next(error);
+    res.send({ user: updatedUser });
+  } catch ({ name, message }) {
+    console.error({ name, message });
+    next({ name, message });
   }
 });
 
-// ... Other routes (GET, PATCH, DELETE) remain the same ...
+usersRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await deleteUserById(id);
 
-usersRouter.get("/protected-route", authenticateToken, (req, res) => {
-  // Only accessible if the user is authenticated
-  // Protected route logic
+    if (!user) {
+      next({
+        name: "NotFound",
+        message: `Cannot find user with ID ${user_id} to delete.`,
+      });
+    } else {
+      res.send({ success: true, user });
+    }
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
 });
 
 module.exports = usersRouter;
 
-usersRouter.get("/protected-route", authenticateToken, (req, res) => {
-  // Only accessible if the user is authenticated
-  // Protected route logic
-});
-
-module.exports = usersRouter;
 

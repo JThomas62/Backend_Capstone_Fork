@@ -129,7 +129,8 @@ async function createInitialBooks() {
       title: "These Burning Stars",
       author: "Bethany Jacobs",
       rating: 4.39,
-      description: "A dangerous cat-and-mouse quest for revenge. ",
+      description:
+        "A dangerous cat-and-mouse quest for revenge. An empire that spans star systems, built on the bones of a genocide. A carefully hidden secret that could collapse worlds, hunted by three women with secrets of their own.",
       genre_id: 4,
       image_url:
         "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1686947278i/75593500.jpg",
@@ -140,7 +141,7 @@ async function createInitialBooks() {
       author: "Ryan La Sala",
       rating: 4.12,
       description:
-        "A resplendent monster of power, secrets, wealth, and murderous interior design.",
+        "From Ryan La Sala, author of the tantalizingly twisted The Honeys and riotously imaginative Reverie, comes a chilling new contemporary fable about art, aesthetic obsession, and the gaze that peers back at us from behind our reflections.",
       genre_id: 2,
       image_url:
         "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1675956367i/61779957.jpg",

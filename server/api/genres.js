@@ -70,7 +70,14 @@ genresRouter.patch("/:id", async (req, res, next) => {
     next({ name, message });
   }
 });
-//NOTE!! DELETE will not work if... Need to to create an alert for admin page that you cannot delete a genre that is being used.
+
+genresRouter.put("/:id", async (req, res, next) => {
+  const { genre } = req.body;
+  try {
+    res.send("Put request called", name);
+  } catch {}
+});
+//NOTE!! DELETE will not work... Need to to create an alert for admin page that you cannot delete a genre that is being used.
 
 genresRouter.delete("/:id", async (req, res, next) => {
   try {

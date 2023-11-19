@@ -70,6 +70,9 @@ apiRouter.use("/users", usersRouter);
 const commentsRouter = require("./comments");
 apiRouter.use("/comments", commentsRouter);
 
+const bookGenresRouter = require("./bookGenres");
+apiRouter.use("/bookGenres", bookGenresRouter);
+
 apiRouter.use((error, req, res, next) => {
   res.send(error);
 });

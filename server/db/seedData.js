@@ -70,14 +70,14 @@ async function createInitialBooks() {
     // Add more: await createBook();
 
     await createBook({
-      title: "Hucklberry Finn",
+      title: "The Adventures of Hucklberry Finn",
       author: "Mark Twain",
       rating: 4.33,
       description:
-        "Adventures of Huckleberry Finn is a novel by American author Mark Twain, which was first published in the United Kingdom in December 1884 and in the United States in February 1885.",
+        "Huckleberry Finn escapes from his evil, drunken father who is trying to steal his treasure. Huck befriends Jim, a runaway slave and together they float towards freedom on a raft down the Mississippi River.",
       genre_id: 1,
       image_url:
-        "https://upload.wikimedia.org/wikipedia/commons/6/61/Huckleberry_Finn_book.JPG",
+        "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1395132462i/223663.jpg",
       active: true,
     });
     await createBook({
@@ -247,7 +247,7 @@ async function createInitialComments() {
     await createComment({
       user_id: 3,
       book_id: 3,
-      content: "Fast moving story line aith plenty of plot twists.",
+      content: "Fast moving story line with plenty of plot twists.",
       rating: 4.27,
     });
     await createComment({

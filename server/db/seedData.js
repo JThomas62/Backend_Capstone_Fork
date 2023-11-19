@@ -9,6 +9,7 @@ const {
   createComment,
   getAllComments,
   deleteGenreById,
+  addGenreToBook,
 } = require("./index");
 
 async function createInitialGenres() {
@@ -262,10 +263,21 @@ async function createInitialComments() {
     throw error;
   }
 }
-
+async function createInitialBookGenres() {
+  try {
+    console.log("Starting CreateInitialBookGenres");
+    await addGenreToBook({ book_id: 1, genre_id: 1 });
+    await addGenreToBook({ book_id: 1, genre_id: 2 });
+    await addGenreToBook({ book_id: 1, genre_id: 3 });
+    console.log("Finished CreateInitialBookGenres");
+  } catch (error) {
+    throw error;
+  }
+}
 module.exports = {
   createInitialGenres,
   createInitialUsers,
   createInitialBooks,
   createInitialComments,
+  createInitialBookGenres,
 };

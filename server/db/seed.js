@@ -1,13 +1,10 @@
 const {
   client,
-  createGenre,
   getAllGenres,
-  createUser,
   getAllUsers,
-  createBook,
   getAllBooks,
-  createComment,
   getAllComments,
+  getAllBookGenres,
 } = require("./index");
 
 const {
@@ -15,6 +12,7 @@ const {
   createInitialUsers,
   createInitialBooks,
   createInitialComments,
+  createInitialBookGenres,
 } = require("./seedData");
 
 async function dropTables() {
@@ -23,6 +21,7 @@ async function dropTables() {
 
     // have to make sure to drop in correct order--comments, books, genres, users
     await client.query(`
+        DROP TABLE IF EXISTS book_genres;
         DROP TABLE IF EXISTS comments;
         DROP TABLE IF EXISTS books;
         DROP TABLE IF EXISTS genres;
@@ -74,27 +73,18 @@ async function createTables() {
           CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
           CONSTRAINT fk_book_id FOREIGN KEY (book_id) REFERENCES books(book_id)
       );
+      CREATE TABLE book_genres (
+        id SERIAL PRIMARY KEY,
+        book_id INT NOT NULL,
+        genre_id INT NOT NULL,
+        CONSTRAINT fk_book_id FOREIGN KEY (book_id) REFERENCES books(book_id),
+        CONSTRAINT fk_genre_id FOREIGN KEY (genre_id) REFERENCES genres(genre_id),
+        CONSTRAINT bookGenres_book_Id_genre_Id_unique UNIQUE (book_id, genre_id)
+    );
     `);
     console.log("Finished building tables!");
   } catch (error) {
     console.error("Error building tables!");
-    throw error;
-  }
-}
-
-async function rebuildDB() {
-  try {
-    client.connect();
-
-    await dropTables();
-    await createTables();
-
-    await createInitialGenres();
-    await createInitialUsers();
-    await createInitialBooks();
-    await createInitialComments();
-  } catch (error) {
-    console.log("Error during rebuildDB");
     throw error;
   }
 }
@@ -109,6 +99,7 @@ async function rebuildDB() {
     await createInitialUsers();
     await createInitialBooks();
     await createInitialComments();
+    await createInitialBookGenres();
   } catch (error) {
     console.log("Error during rebuildDB");
     throw error;
@@ -133,6 +124,10 @@ async function testDB() {
     console.log("Calling getAllComments");
     const comments = await getAllComments();
     console.log("Result:", comments);
+
+    console.log("Calling getAllBookGenres");
+    const bookGenres = await getAllBookGenres();
+    console.log("Result:", bookGenres);
 
     console.log("Finished database tests!");
   } catch (err) {

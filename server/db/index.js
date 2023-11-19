@@ -354,6 +354,35 @@ async function deleteCommentById(id) {
   }
 }
 
+async function getAllBookGenres() {
+  try {
+    const { rows } = await client.query(`
+      SELECT *
+      FROM book_genres;
+    `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function addGenreToBook({ book_id, genre_id }) {
+  try {
+    const {
+      rows: [bookGenre],
+    } = await client.query(
+      `
+    INSERT INTO book_genres(book_id, genre_id) 
+    VALUES($1, $2)
+    ON CONFLICT ON CONSTRAINT bookGenres_book_Id_genre_Id_unique DO NOTHING RETURNING *;
+    `,
+      [book_id, genre_id]
+    );
+    return bookGenre;
+  } catch (error) {
+    throw error;
+  }
+}
 module.exports = {
   client,
   createGenre,
@@ -376,4 +405,6 @@ module.exports = {
   getCommentById,
   updateComment,
   deleteCommentById,
+  addGenreToBook,
+  getAllBookGenres,
 };

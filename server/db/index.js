@@ -41,7 +41,36 @@ async function getAllUsers() {
     throw error;
   }
 }
+async function getUserByUsername(username) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT *
+      FROM users
+      WHERE username=$1
+    `,
+      [username]
+    );
 
+    if (!user) {
+      console.log(
+        "UserNotFoundError: A user with that username does not exist"
+      );
+
+      return null;
+      throw {
+        name: "UserNotFoundError",
+        message: "A user with that username does not exist",
+      };
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
 async function getUserById(id) {
   try {
     const {
@@ -434,6 +463,7 @@ module.exports = {
   deleteGenreById,
   createUser,
   getAllUsers,
+  getUserByUsername,
   getUserById,
   updateUser,
   deleteUserById,

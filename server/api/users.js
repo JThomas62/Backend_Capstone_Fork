@@ -39,9 +39,9 @@ usersRouter.post("/", async (req, res, next) => {
       res.send(user);
     } else {
       next({
-        name: "userCreationError",
+        error: "userCreationError",
         message:
-          "There was an error creating your user. Please try again. Possibly user's name or email are not unique or pre-existing",
+          "There was an error creating your user. Please try again. Possibly, user's name or email are pre-existing or not unique.",
       });
     }
   } catch ({ name, message }) {
@@ -146,7 +146,7 @@ usersRouter.post("/login", async (req, res, next) => {
     } else {
       next({
         name: "IncorrectCredentialsError",
-        message: "Username or password is incorrect",
+        message: "Username or password is incorrect.",
       });
     }
   } catch (error) {

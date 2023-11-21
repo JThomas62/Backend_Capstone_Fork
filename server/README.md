@@ -22,3 +22,8 @@ http://localhost:3006/api/v1/bookgenres/:book_id
 method: DELETE
 body: {genre_id}
 Returns the deleted bookgenre.
+
+To get all comments for a specific book_id:
+http://localhost:3006/api/v1/comments/book/1
+method: GET
+Returns array of comments belonging to a specific book.

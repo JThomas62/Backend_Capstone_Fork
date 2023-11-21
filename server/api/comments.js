@@ -7,6 +7,7 @@ const {
   getCommentById,
   updateComment,
   deleteCommentById,
+  getCommentsByBookId,
 } = require("../db");
 
 commentsRouter.post("/", async (req, res, next) => {
@@ -44,6 +45,19 @@ commentsRouter.get("/", async (req, res, next) => {
     res.send({
       allComments,
     });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
+
+commentsRouter.get("/book/:book_id", async (req, res, next) => {
+  const { book_id } = req.params;
+
+  try {
+    const bookComments = await getCommentsByBookId(book_id);
+
+    res.send({ bookComments });
   } catch ({ name, message }) {
     next({ name, message });
   }

@@ -8,6 +8,7 @@ const {
   updateComment,
   deleteCommentById,
   getCommentsByBookId,
+  getCommentsByUsername,
 } = require("../db");
 
 commentsRouter.post("/", async (req, res, next) => {
@@ -55,9 +56,21 @@ commentsRouter.get("/book/:book_id", async (req, res, next) => {
   const { book_id } = req.params;
 
   try {
-    const bookComments = await getCommentsByBookId(book_id);
+    const comments = await getCommentsByBookId(book_id);
 
-    res.send({ bookComments });
+    res.send({ comments });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
+commentsRouter.get("/user/:username", async (req, res, next) => {
+  const { username } = req.params;
+
+  try {
+    const comments = await getCommentsByUsername(username);
+
+    res.send({ comments });
   } catch ({ name, message }) {
     next({ name, message });
   }

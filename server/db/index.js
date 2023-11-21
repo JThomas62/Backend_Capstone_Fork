@@ -350,7 +350,31 @@ async function getCommentById(id) {
     throw error;
   }
 }
+async function getCommentsByBookId(book_id) {
+  try {
+    const { rows } = await client.query(`
+    SELECT * FROM comments WHERE book_id = $1`, 
+    [ book_id ]);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
 
+async function getCommentsByUsername(username) {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    return null;
+  }
+  try {
+    const { rows } = await client.query(`
+    SELECT * FROM comments WHERE user_id = $1`, 
+    [ user.user_id ]);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
 async function updateComment(id, user_id, book_id, content, rating) {
   try {
     const {
@@ -477,6 +501,8 @@ module.exports = {
   getCommentById,
   updateComment,
   deleteCommentById,
+  getCommentsByBookId,
+  getCommentsByUsername,
   addGenreToBook,
   getAllBookGenres,
   getGenresByBookId,

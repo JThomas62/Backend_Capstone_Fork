@@ -57,6 +57,12 @@ async function createInitialGenres() {
     await createGenre({
       name: "children's",
     });
+    await createGenre({
+      name: "contemporary",
+    });
+    await createGenre({
+      name: "suspense",
+    });
     console.log("Finished creating genres!");
   } catch (error) {
     console.error("Error creating genres!");
@@ -267,8 +273,26 @@ async function createInitialBookGenres() {
   try {
     console.log("Starting CreateInitialBookGenres");
     await addGenreToBook({ book_id: 1, genre_id: 1 });
-    await addGenreToBook({ book_id: 1, genre_id: 2 });
-    await addGenreToBook({ book_id: 1, genre_id: 3 });
+    await addGenreToBook({ book_id: 1, genre_id: 6 });
+    await addGenreToBook({ book_id: 1, genre_id: 10 });
+    await addGenreToBook({ book_id: 2, genre_id: 5 });
+    await addGenreToBook({ book_id: 3, genre_id: 9 });
+    await addGenreToBook({ book_id: 3, genre_id: 10 });
+    await addGenreToBook({ book_id: 4, genre_id: 11 });
+    await addGenreToBook({ book_id: 4, genre_id: 8 });
+    await addGenreToBook({ book_id: 3, genre_id: 1 });
+    await addGenreToBook({ book_id: 4, genre_id: 2 });
+    await addGenreToBook({ book_id: 5, genre_id: 3 });
+    await addGenreToBook({ book_id: 5, genre_id: 7 });
+    await addGenreToBook({ book_id: 6, genre_id: 4 });
+    await addGenreToBook({ book_id: 6, genre_id: 1 });
+    await addGenreToBook({ book_id: 7, genre_id: 7 });
+    await addGenreToBook({ book_id: 6, genre_id: 14 });
+    await addGenreToBook({ book_id: 7, genre_id: 15 });
+    await addGenreToBook({ book_id: 8, genre_id: 12 });
+    await addGenreToBook({ book_id: 9, genre_id: 8 });
+    await addGenreToBook({ book_id: 9, genre_id: 9 });
+    await addGenreToBook({ book_id: 2, genre_id: 13 });
     console.log("Finished CreateInitialBookGenres");
   } catch (error) {
     throw error;

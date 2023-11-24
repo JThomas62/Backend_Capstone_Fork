@@ -590,4 +590,6 @@ module.exports = {
   getGenresByBookId,
   deleteBookGenreById,
   deleteGenreFromBook,
+  getBookAndCommentByUser,
+  getBookGenresFromBookByBookID,
 };

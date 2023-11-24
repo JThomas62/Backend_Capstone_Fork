@@ -282,18 +282,54 @@ async function updateBook(
   }
 }
 
-async function deleteBookById(id) {
+async function deleteAllGenresFromBook(book_id) {
   try {
+    console.log("Deleting genres from the book");
+
+    const {
+      rows: [bookGenre],
+    } = await client.query(
+      `
+      DELETE FROM book_genres WHERE book_id = $1 RETURNING *;
+      `,
+      [book_id]
+    );
+    return bookGenre;
+  } catch (error) {
+    throw error;
+  }
+}
+async function deleteAllCommentsFromBook(book_id) {
+  try {
+    const {
+      rows: [comment],
+    } = await client.query(
+      `
+      DELETE FROM comments WHERE book_id = $1 RETURNING *;
+      `,
+      [book_id]
+    );
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+}
+async function deleteBookById(book_id) {
+  try {
+    await deleteAllGenresFromBook(book_id);
+    await deleteAllCommentsFromBook(book_id);
     const {
       rows: [book],
     } = await client.query(
       `
-    DELETE FROM books
-    WHERE book_id = $1
-    RETURNING *;
-  `,
-      [id]
+        DELETE FROM books
+        WHERE book_id = $1
+        RETURNING *;
+      `,
+      [book_id]
     );
+    console.log("Deleting book:");
+    console.log(book);
     return book;
   } catch (error) {
     throw error;
@@ -352,9 +388,11 @@ async function getCommentById(id) {
 }
 async function getCommentsByBookId(book_id) {
   try {
-    const { rows } = await client.query(`
-    SELECT * FROM comments WHERE book_id = $1`, 
-    [ book_id ]);
+    const { rows } = await client.query(
+      `
+    SELECT * FROM comments WHERE book_id = $1`,
+      [book_id]
+    );
     return rows;
   } catch (error) {
     throw error;
@@ -367,9 +405,11 @@ async function getCommentsByUsername(username) {
     return null;
   }
   try {
-    const { rows } = await client.query(`
-    SELECT * FROM comments WHERE user_id = $1`, 
-    [ user.user_id ]);
+    const { rows } = await client.query(
+      `
+    SELECT * FROM comments WHERE user_id = $1`,
+      [user.user_id]
+    );
     return rows;
   } catch (error) {
     throw error;
@@ -407,8 +447,6 @@ async function deleteCommentById(id) {
   }
 }
 
-// BOOKGENRES methods; CAUTION: Be careful with spelling of genres (not generes)
-
 async function getAllBookGenres() {
   try {
     const { rows } = await client.query(`
@@ -444,6 +482,8 @@ async function getGenresByBookId(book_id) {
   }
 }
 
+async function getBookGenresFromBookByBookID(book_id) {}
+
 async function addGenreToBook({ book_id, genre_id }) {
   try {
     const {
@@ -471,6 +511,22 @@ async function deleteGenreFromBook({ book_id, genre_id }) {
     DELETE FROM book_genres WHERE book_id = $1 AND genre_id = $2 RETURNING *;
     `,
       [book_id, genre_id]
+    );
+    return bookGenre;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteBookGenreById(id) {
+  try {
+    const {
+      rows: [bookGenre],
+    } = await client.query(
+      `
+    DELETE FROM book_genres WHERE id = $1 RETURNING *;
+    `,
+      [id]
     );
     return bookGenre;
   } catch (error) {
@@ -506,5 +562,6 @@ module.exports = {
   addGenreToBook,
   getAllBookGenres,
   getGenresByBookId,
+  deleteBookGenreById,
   deleteGenreFromBook,
 };

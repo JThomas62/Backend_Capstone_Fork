@@ -142,6 +142,8 @@ usersRouter.post("/login", async (req, res, next) => {
         status: user.status,
         message: "you're logged in!",
         token,
+        user_id: user.user_id,
+        username: user.username,
       });
     } else {
       next({

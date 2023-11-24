@@ -114,7 +114,7 @@ usersRouter.delete("/:id", async (req, res, next) => {
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
-  // request must have both
+  // request must have both username & password
   if (!username || !password) {
     next({
       name: "MissingCredentialsError",
@@ -140,6 +140,7 @@ usersRouter.post("/login", async (req, res, next) => {
       res.send({
         success: true,
         status: user.status,
+        user_id: user.user_id,
         message: "you're logged in!",
         token,
         user_id: user.user_id,

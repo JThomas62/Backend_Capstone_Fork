@@ -19,6 +19,7 @@ bookGenresRouter.get("/", async (req, res, next) => {
   }
 });
 
+//Shows all the genres for a book_id.
 bookGenresRouter.get("/:book_id", async (req, res, next) => {
   const { book_id } = req.params;
   try {

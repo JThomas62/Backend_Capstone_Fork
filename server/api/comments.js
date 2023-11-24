@@ -51,7 +51,6 @@ commentsRouter.get("/", async (req, res, next) => {
   }
 });
 
-
 commentsRouter.get("/book/:book_id", async (req, res, next) => {
   const { book_id } = req.params;
 
@@ -83,6 +82,24 @@ commentsRouter.get("/:id", async (req, res, next) => {
     const comment = await getCommentById(id);
 
     res.send({ comment });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
+commentsRouter.get("/bookCommentsByUser/:user_id", async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const bookComment = await getBookAndCommentByUser(user_id);
+
+    if (!bookComment) {
+      next({
+        name: "NotFound",
+        message: `Cannot find join of book and comment by user_id ${user_id}`,
+      });
+    } else {
+      res.send({ success: true, bookComment });
+    }
   } catch ({ name, message }) {
     next({ name, message });
   }

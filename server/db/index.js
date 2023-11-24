@@ -415,6 +415,8 @@ async function getCommentsByUsername(username) {
     throw error;
   }
 }
+
+//Book methods
 async function updateComment(id, user_id, book_id, content, rating) {
   try {
     const {
@@ -446,7 +448,7 @@ async function deleteCommentById(id) {
     throw error;
   }
 }
-
+//
 async function getAllBookGenres() {
   try {
     const { rows } = await client.query(`
@@ -529,6 +531,30 @@ async function deleteBookGenreById(id) {
       [id]
     );
     return bookGenre;
+  } catch (error) {
+    throw error;
+  }
+}
+//Book & Comment Method
+async function getBookAndCommentByUser(user_id) {
+  try {
+    const { rows } = await client.query(
+      `SELECT * FROM books 
+      INNER JOIN comments 
+      ON books.book_id = comments.book_id
+      WHERE comments.user_id = $1
+      ; 
+      `,
+      [user_id]
+    );
+
+    if (!rows) {
+      throw {
+        name: "BookAndCommentByUserIDError",
+        message: `Join of Books and Comments filtered on user_id: ${user_id} does not exist`,
+      };
+    }
+    return rows;
   } catch (error) {
     throw error;
   }

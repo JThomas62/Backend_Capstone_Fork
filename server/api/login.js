@@ -1,8 +1,8 @@
 // Importing necessary libraries
 const express = require("express");
 const loginRouter = express.Router();
-// const router = express.Router();
-const bcrypt = require("bcrypt");
+//opted not to implement bcrypt in this version
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { getUserByUsername } = require("../db");
 

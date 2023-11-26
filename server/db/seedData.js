@@ -84,7 +84,7 @@ async function createInitialBooks() {
         "Huckleberry Finn escapes from his evil, drunken father who is trying to steal his treasure. Huck befriends Jim, a runaway slave and together they float towards freedom on a raft down the Mississippi River.",
       genre_id: 1,
       image_url:
-        "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1395132462i/223663.jpg",
+        "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546096879i/2956.jpg",
       active: true,
     });
     await createBook({

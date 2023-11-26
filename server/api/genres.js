@@ -69,7 +69,7 @@ genresRouter.patch("/:id", async (req, res, next) => {
     next({ name, message });
   }
 });
-
+//genresRouter.put not used at this time but keeping for future iterations
 genresRouter.put("/:id", async (req, res, next) => {
   const { genre } = req.body;
   try {

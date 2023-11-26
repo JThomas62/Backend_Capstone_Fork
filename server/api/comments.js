@@ -9,6 +9,7 @@ const {
   deleteCommentById,
   getCommentsByBookId,
   getCommentsByUsername,
+  getBookAndCommentByUser
 } = require("../db");
 
 commentsRouter.post("/", async (req, res, next) => {

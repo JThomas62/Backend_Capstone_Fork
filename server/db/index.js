@@ -241,6 +241,36 @@ async function getAllBooks() {
   }
 }
 
+async function getAllBooks_With_Rating() {
+  try {
+    const books = await getAllBooks();
+
+    const booksWithRatings = await Promise.all(
+      books.map(async (book) => {
+        const comments = await getCommentsByBookId(book.book_id);
+
+        if (!comments || comments.length === 0) {
+          return { ...book, rating: null };
+        }
+
+        let sumOfRatings = 0;
+        comments.forEach((comment) => {
+          sumOfRatings += Number(comment.rating);
+        });
+
+        const averageRating = sumOfRatings / comments.length;
+        const bookWithRating = { ...book, rating: averageRating };
+
+        return bookWithRating;
+      })
+    );
+
+    return booksWithRatings;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function getBookById(id) {
   try {
     const {
@@ -575,6 +605,7 @@ module.exports = {
   deleteUserById,
   createBook,
   getAllBooks,
+  getAllBooks_With_Rating,
   getBookById,
   updateBook,
   deleteBookById,

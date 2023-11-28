@@ -4,10 +4,8 @@ const loginRouter = express.Router();
 //opted not to implement bcrypt in this version
 // const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { secretKey } = process.env;
 const { getUserByUsername } = require("../db");
-
-// Secret key for JWT
-const secretKey = "your-secret-key";
 
 // Login endpoint
 loginRouter.post("/", async (req, res) => {

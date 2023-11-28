@@ -3,7 +3,7 @@ const booksRouter = express.Router();
 
 const {
   createBook,
-  getAllBooks,
+  getAllBooks_With_Rating,
   getBookById,
   updateBook,
   deleteBookById,
@@ -43,7 +43,7 @@ booksRouter.post("/", async (req, res, next) => {
 
 booksRouter.get("/", async (req, res, next) => {
   try {
-    const allBooks = await getAllBooks();
+    const allBooks = await getAllBooks_With_Rating();
 
     res.send({
       allBooks,

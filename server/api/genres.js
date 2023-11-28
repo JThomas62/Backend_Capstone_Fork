@@ -9,7 +9,6 @@ const {
   deleteGenreById,
 } = require("../db");
 
-//need to change once genre dropdown is added
 genresRouter.post("/", async (req, res, next) => {
   const { name } = req.body;
 
@@ -70,14 +69,13 @@ genresRouter.patch("/:id", async (req, res, next) => {
     next({ name, message });
   }
 });
-
+//genresRouter.put not used at this time but keeping for future iterations
 genresRouter.put("/:id", async (req, res, next) => {
   const { genre } = req.body;
   try {
     res.send("Put request called", name);
   } catch {}
 });
-//NOTE!! DELETE will not work... Need to to create an alert for admin page that you cannot delete a genre that is being used.
 
 genresRouter.delete("/:id", async (req, res, next) => {
   try {

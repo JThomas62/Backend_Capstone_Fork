@@ -57,7 +57,7 @@ async function createTables() {
         book_id SERIAL PRIMARY KEY,
         title VARCHAR(100) NOT NULL,
         author VARCHAR(100) NOT NULL,
-        rating DECIMAL(3,2),
+        rating DECIMAL(2,1),
         description TEXT,
         genre_id INT NOT NULL,
         image_url VARCHAR(255),
@@ -69,7 +69,7 @@ async function createTables() {
           user_id INT NOT NULL,
           book_id INT NOT NULL,
           content TEXT NOT NULL,
-          rating DECIMAL(3,2),
+          rating DECIMAL(2,1),
           CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
           CONSTRAINT fk_book_id FOREIGN KEY (book_id) REFERENCES books(book_id)
       );

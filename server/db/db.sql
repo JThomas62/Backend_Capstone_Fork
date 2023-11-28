@@ -28,5 +28,9 @@ CREATE TABLE comments (
 );
 CREATE TABLE genres (
     genre_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    book_id INT NOT NULL,
+    genre_id INT NOT NULL,
+    CONSTRAINT fk_book_id FOREIGN KEY (book_id) REFERENCES books(book_id),
+    CONSTRAINT fk_genre_id FOREIGN KEY (genre_id) REFERENCES genres(genre_id),
+    CONSTRAINT bookGenres_book_Id_genre_Id_unique UNIQUE (book_id, genre_id)
 );

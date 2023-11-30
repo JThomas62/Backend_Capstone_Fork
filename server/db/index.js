@@ -1,4 +1,8 @@
+require("dotenv").config();
+const bcrypt = require("bcrypt");
+
 const { Client } = require("pg"); // Import pg module
+
 require("dotenv").config();
 
 const client = new Client({
@@ -9,9 +13,12 @@ const client = new Client({
       ? { rejectUnauthorized: false }
       : undefined,
 });
+// SALT_COUNT will be kept in .env file, but is here for development
+const SALT_COUNT = 10;
 
 // USER Methods
 async function createUser({ name, email, username, password, status }) {
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
   try {
     const {
       rows: [user],
@@ -22,18 +29,18 @@ async function createUser({ name, email, username, password, status }) {
       ON CONFLICT ON CONSTRAINT users_username_email_unique DO NOTHING
       RETURNING *;
       `,
-      [name, email, username, password, status]
+      [name, email, username, hashedPassword, status]
     );
     return user;
   } catch (error) {
-    console.log("createUser() throws error");
+    console.error("createUser() throws error");
     throw error;
   }
 }
 async function getAllUsers() {
   try {
     const { rows } = await client.query(`
-      SELECT *
+      SELECT user_id, name, email, username, password, status
       FROM users;
     `);
     return rows;
@@ -41,7 +48,47 @@ async function getAllUsers() {
     throw error;
   }
 }
-async function getUserByUsername(username) {
+async function getUser({ username, password }) {
+  if (!username || !password) {
+    return;
+  }
+
+  try {
+    const user = await getUserByUsername(username);
+    if (!user) return;
+    const hashedPassword = user.password;
+    const passwordsMatch = await bcrypt.compare(password, hashedPassword);
+    if (!passwordsMatch) return;
+    delete user.password;
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+async function getUserByUsername(userName) {
+  // first get the user
+  try {
+    const { rows } = await client.query(
+      `
+      SELECT *
+      FROM users
+      WHERE username = $1;
+    `,
+      [userName]
+    );
+    // if it doesn't exist, return null
+    if (!rows || !rows.length) return null;
+    // if it does:
+    // delete the 'password' key from the returned object
+    const [user] = rows;
+    // delete user.password;
+    return user;
+  } catch (error) {
+    console.error(error);
+  }
+}
+async function getUserById(userId) {
+  // first get the user
   try {
     const {
       rows: [user],
@@ -49,40 +96,15 @@ async function getUserByUsername(username) {
       `
       SELECT *
       FROM users
-      WHERE username=$1
+      WHERE user_id = $1;
     `,
-      [username]
+      [userId]
     );
-
-    if (!user) {
-      console.log(
-        "UserNotFoundError: A user with that username does not exist"
-      );
-
-      return null;
-      throw {
-        name: "UserNotFoundError",
-        message: "A user with that username does not exist",
-      };
-    }
-
-    return user;
-  } catch (error) {
-    throw error;
-  }
-}
-async function getUserById(id) {
-  try {
-    const {
-      rows: [user],
-    } = await client.query(`SELECT * FROM users WHERE user_id = $1`, [id]);
-
-    if (!user) {
-      throw {
-        name: "User(ID)NotFoundError",
-        message: `User with user_id: ${id} does not exist`,
-      };
-    }
+    // if it doesn't exist, return null
+    if (!user) return null;
+    // if it does:
+    // delete the 'password' key from the returned object
+    delete user.password;
     return user;
   } catch (error) {
     throw error;
@@ -598,6 +620,7 @@ module.exports = {
   updateGenre,
   deleteGenreById,
   createUser,
+  getUser,
   getAllUsers,
   getUserByUsername,
   getUserById,

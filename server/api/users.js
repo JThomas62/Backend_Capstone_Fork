@@ -1,51 +1,68 @@
 const express = require("express");
 const usersRouter = express.Router();
-const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
-
+const { JWT_SECRET } = process.env;
+const { requireUser } = require("./utils");
 const {
   getAllUsers,
   createUser,
+  getUser,
   getUserById,
   updateUser,
   deleteUserById,
   getUserByUsername,
 } = require("../db");
 
-/*
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        password VARCHAR(50) NOT NULL,
-        status VARCHAR(20),
-*/
 usersRouter.post("/", async (req, res, next) => {
   const { name, email, username, password, status } = req.body;
 
   const userData = {};
+  userData.name = name;
+  userData.email = email;
+  userData.username = username;
+  userData.password = password;
+  userData.status = status;
+
+  if (!username || !password) {
+    next({
+      name: "MissingCredentialsError",
+      message: "Please supply both a username and password",
+    });
+  }
 
   try {
-    userData.name = name;
-    userData.email = email;
-    userData.username = username;
-    userData.password = password;
-    userData.status = status;
-
     console.log(`Trying to createUser ${userData}`);
-
-    const user = await createUser(userData);
-
-    if (user) {
-      res.send(user);
-    } else {
+    const queriedUser = await getUserByUsername(username);
+    if (queriedUser) {
+      res.status(401);
       next({
-        error: "userCreationError",
-        message:
-          "There was an error creating your user. Please try again. Possibly, user's name or email are pre-existing or not unique.",
+        name: "UserExistsError",
+        message: "A user by that username already exists",
       });
+    } else if (password.length < 8) {
+      res.status(401);
+      next({
+        name: "PasswordLengthError",
+        message: "Password Too Short!",
+      });
+    } else {
+      const user = await createUser(userData);
+      if (!user) {
+        next({
+          name: "UserCreationError",
+          message: "There was a problem registering you. Please try again.",
+        });
+      } else {
+        const token = jwt.sign(
+          { id: user.id, username: user.username },
+          JWT_SECRET,
+          { expiresIn: "1w" }
+        );
+        res.send({ user, message: "you're signed up!", token });
+      }
     }
-  } catch ({ name, message }) {
-    next({ name, message });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -111,6 +128,7 @@ usersRouter.delete("/:id", async (req, res, next) => {
     next({ name, message });
   }
 });
+
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
@@ -123,20 +141,18 @@ usersRouter.post("/login", async (req, res, next) => {
   }
 
   try {
-    const user = await getUserByUsername(username);
-    console.log(user);
-    if (user && user.password == password) {
+    const user = await getUser({ username, password });
+    if (!user) {
+      next({
+        name: "IncorrectCredentialsError",
+        message: "Username or password is incorrect",
+      });
+    } else {
       const token = jwt.sign(
-        {
-          id: user.id,
-          username,
-        },
+        { id: user.id, username: user.username },
         JWT_SECRET,
-        {
-          expiresIn: "1w",
-        }
+        { expiresIn: "1w" }
       );
-
       res.send({
         success: true,
         status: user.status,
@@ -145,11 +161,6 @@ usersRouter.post("/login", async (req, res, next) => {
         token,
         user_id: user.user_id,
         username: user.username,
-      });
-    } else {
-      next({
-        name: "IncorrectCredentialsError",
-        message: "Username or password is incorrect.",
       });
     }
   } catch (error) {

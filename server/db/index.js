@@ -1,6 +1,6 @@
-// const client = require("./client");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+
 const { Client } = require("pg"); // Import pg module
 
 require("dotenv").config();
@@ -13,7 +13,6 @@ const client = new Client({
       ? { rejectUnauthorized: false }
       : undefined,
 });
-
 // SALT_COUNT will be kept in .env file, but is here for development
 const SALT_COUNT = 10;
 
@@ -41,7 +40,7 @@ async function createUser({ name, email, username, password, status }) {
 async function getAllUsers() {
   try {
     const { rows } = await client.query(`
-      SELECT name, email, username, password, status
+      SELECT user_id, name, email, username, password, status
       FROM users;
     `);
     return rows;

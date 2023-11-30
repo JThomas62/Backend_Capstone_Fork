@@ -73,8 +73,8 @@ apiRouter.use("/comments", commentsRouter);
 const bookGenresRouter = require("./bookGenres");
 apiRouter.use("/bookGenres", bookGenresRouter);
 
-const loginRouter = require("./login");
-apiRouter.use("/login", loginRouter);
+// const loginRouter = require("./login");
+// apiRouter.use("/login", loginRouter);
 
 apiRouter.use((error, req, res, next) => {
   res.send(error);

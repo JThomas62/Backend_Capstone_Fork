@@ -1,5 +1,4 @@
 const {
-  client,
   createGenre,
   getAllGenres,
   createBook,
